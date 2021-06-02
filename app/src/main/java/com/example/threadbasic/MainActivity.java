@@ -8,11 +8,10 @@ import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
     WorkerThread wt;
-    Thread wr;
+    WorkerRunnable wr;
     boolean running = true;
 
     String TAG = "THREAD";
-    String TAG2 = "THREAD";
 
     class WorkerThread extends Thread {
         public void run() {
@@ -27,6 +26,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    class WorkerRunnable extends Thread {
+        public void run() {
+            int i = 0;
+            for(i = 0; i < 20 && running; i++) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+                Log.v(TAG, "Runnable time = " + i);
+            }
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,25 +50,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         running = true;
+
         wt = new WorkerThread();
         wt.start();
-        Log.v(TAG, "Now I am in onStart");
+//      Log.v(TAG, "Now I am in onStart");
 
-        wr = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int i = 0;
-                for(i = 0; i < 20 && running; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                    }
-                    Log.v(TAG2, "Runnable time = " + i);
-                }
-            }
-        });
-        wr.start();
-        Log.v(TAG2, "Now I am in onStart");
+        wr = new WorkerRunnable();
+        wr.run();
+        Log.v(TAG, "Now I am in onStart");
     }
 
     @Override
